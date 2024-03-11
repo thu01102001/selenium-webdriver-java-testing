@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 
 import java.time.Duration;
 
-public class Thuchanh {
+public class Thuchanh_1 {
     //1. setup: OS/ Browser / Web / Page / Data /Variable/ Objiect (đủ điều kiện để thực thi testcase)
     WebDriver driver; //khai báo bến
     @BeforeClass
