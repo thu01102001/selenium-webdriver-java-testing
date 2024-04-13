@@ -1,6 +1,7 @@
 package webdriver;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -11,7 +12,7 @@ public class Topic_00_Template {
     WebDriver driver; //khai báo bến
     @BeforeClass
     public void InitialBrowser() {
-        driver = new FirefoxDriver();
+        driver = new ChromeDriver();
         driver.get("https://demo.nopcommerce.com");
     }
 //

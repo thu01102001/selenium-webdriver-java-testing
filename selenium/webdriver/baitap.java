@@ -57,7 +57,6 @@ public class baitap {
         driver.findElement(By.id("txtPhone")).sendKeys("0364697180");
         driver.findElement(By.xpath("//div[@class='field_btn']//button")).click();
         Assert.assertEquals(driver.findElement(By.id("txtCEmail-error")).getText(), "Email nhập lại không đúng");
-
     }
     @Test
     public void TC_04_Invalid_Password() {
@@ -95,7 +94,9 @@ public class baitap {
         driver.findElement(By.id("txtPhone")).sendKeys("123456");
         driver.findElement(By.xpath("//div[@class='field_btn']//button")).click();
         Assert.assertEquals(driver.findElement(By.id("txtPhone-error")).getText(), "Số điện thoại bắt đầu bằng: 09 - 03 - 012 - 016 - 018 - 019 - 088 - 03 - 05 - 07 - 08");
-        Thread.sleep(6000);
+        driver.findElement(By.id("txtPhone")).clear();
+        driver.findElement(By.id("txtPhone")).sendKeys("0987654321");
+        Assert.assertEquals(driver.findElement(By.id("txtPhone-error")).getText(), "Số điện thoại phai   10-11 so");
     }
     @AfterClass
     public void cleanBrowser() {
