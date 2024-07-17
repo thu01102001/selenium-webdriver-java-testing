@@ -1,7 +1,7 @@
 Automation test:::   https://docs.google.com/document/d/1uN9Mg1_GnQWD2KOfADFv3q68TS_O10zJt1CuOVrw1kE/edit
 
 
-**********Lý thuyết**********
+**********LÝ THUYẾT**********
 
 Topic 01: https://docs.google.com/document/d/1lxapCPDhpwnFsFdtBd8XGZiRFf7z1Tnjsi-gboMNSuQ/edit#heading=h.3dll7mk3ov2b
 
@@ -22,7 +22,7 @@ Topic 11/12: https://docs.google.com/document/d/1b7K0477sv93FKmKQAuBH41aX9PJakTi
 Topic 13: https://docs.google.com/document/d/1iXBeWi-58bF1rVcJ5s9S9MBnx4q6cNgX0ByUXXUpiWo/edit#heading=h.o1olrwj77ddl
 
 
-**********Bài tập**********
+**********BÀI TẬP**********
 
 Topic 04/05: https://docs.google.com/document/d/1UaYIlYZMJib3ThkE2KaEhn9J2saOc5kSIhRYrGyNZwo/edit#heading=h.vg4t8lch9n7c
 
