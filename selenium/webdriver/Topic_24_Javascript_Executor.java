@@ -1,0 +1,356 @@
+package webdriver;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.Color;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import java.time.Duration;
+import java.util.Random;
+
+public class Topic_24_Javascript_Executor {
+    public Object executeForBrowser(String javaScript) {
+        return jsExecutor.executeScript(javaScript);
+    }
+
+    public String getInnerText() {
+        return (String) jsExecutor.executeScript("return document.documentElement.innerText;");
+    }
+
+    public boolean isExpectedTextInInnerText(String textExpected) {
+        String textActual = (String) jsExecutor.executeScript("return document.documentElement.innerText.match('" + textExpected + "')[0];");
+        return textActual.equals(textExpected);
+    }
+
+    public void scrollToBottomPage() {
+        jsExecutor.executeScript("window.scrollBy(0,document.body.scrollHeight)");
+    }
+
+    public void sleepInSecond(int timeout) {
+        try {
+            Thread.sleep(timeout * 1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void navigateToUrlByJS(String url) {
+        jsExecutor.executeScript("window.location = '" + url + "'");
+        sleepInSecond(3);
+    }
+
+    public void hightlightElement(String locator) {
+        WebElement element = getElement(locator);
+        String originalStyle = element.getAttribute("style");
+        jsExecutor.executeScript("arguments[0].setAttribute('style', arguments[1])", element, "border: 2px solid red; border-style: dashed;");
+        sleepInSecond(2);
+        jsExecutor.executeScript("arguments[0].setAttribute('style', arguments[1])", element, originalStyle);
+    }
+
+    public void clickToElementByJS(String locator) {
+        jsExecutor.executeScript("arguments[0].click();", getElement(locator));
+        sleepInSecond(3);
+    }
+
+    public void scrollToElementOnTop(String locator) {
+        jsExecutor.executeScript("arguments[0].scrollIntoView(true);", getElement(locator));
+    }
+
+    public void scrollToElementOnDown(String locator) {
+        jsExecutor.executeScript("arguments[0].scrollIntoView(false);", getElement(locator));
+    }
+
+    public void setAttributeInDOM(String locator, String attributeName, String attributeValue) {
+        jsExecutor.executeScript("arguments[0].setAttribute('" + attributeName + "', '" + attributeValue +"');", getElement(locator));
+    }
+
+    public void removeAttributeInDOM(String locator, String attributeRemove) {
+        jsExecutor.executeScript("arguments[0].removeAttribute('" + attributeRemove + "');", getElement(locator));
+    }
+
+    public void sendkeyToElementByJS(String locator, String value) {
+        jsExecutor.executeScript("arguments[0].setAttribute('value', '" + value + "')", getElement(locator));
+    }
+
+    public String getAttributeInDOM(String locator, String attributeName) {
+        return (String) jsExecutor.executeScript("return arguments[0].getAttribute('" + attributeName + "');", getElement(locator));
+    }
+
+    public String getElementValidationMessage(String locator) {
+        return (String) jsExecutor.executeScript("return arguments[0].validationMessage;", getElement(locator));
+    }
+
+    public boolean isImageLoaded(String locator) {
+        boolean status = (boolean) jsExecutor.executeScript(
+                "return arguments[0].complete && typeof arguments[0].naturalWidth != 'undefined' && arguments[0].naturalWidth > 0", getElement(locator));
+        return status;
+    }
+
+    public WebElement getElement(String locator) {
+        return driver.findElement(By.xpath(locator));
+    }
+    //1. setup: OS/ Browser / Web / Page / Data /Variable/ Objiect (đủ điều kiện để thực thi testcase)
+    WebDriver driver; //khai báo bến
+    JavascriptExecutor jsExecutor;
+    WebDriverWait explicitWait;
+    String email;
+    String random;
+    @BeforeClass
+    public void InitialBrowser() {
+        driver = new ChromeDriver();
+        jsExecutor = (JavascriptExecutor) driver;
+        explicitWait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        email = "automation" + new Random().nextInt(999) + "@gmail.com";
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
+    }
+//
+    @Test
+    public void TC_01_() throws InterruptedException {
+        jsExecutor.executeScript("window.location = 'http://live.techpanda.org/'");
+        Thread.sleep(3000);
+        String getDomain = (String) jsExecutor.executeScript("return document.domain;");
+        Assert.assertEquals(getDomain, "live.techpanda.org");
+
+        String getURL = (String) jsExecutor.executeScript("return document.URL;");
+        Assert.assertEquals(getURL, "http://live.techpanda.org/");
+
+        jsExecutor.executeScript("arguments[0].click();", driver.findElement(By.xpath("//a[text()='Mobile']")));
+        Thread.sleep(3000);
+        jsExecutor.executeScript("arguments[0].click();", driver.findElement(By.xpath("//a[text()='Samsung Galaxy']/ancestor::div[@class='product-info']//span[text()='Add to Cart']")));
+        Thread.sleep(3000);
+
+        String text = (String) jsExecutor.executeScript("return document.documentElement.innerText;");
+        Assert.assertTrue(text.contains("Samsung Galaxy was added to your shopping cart."));
+
+        jsExecutor.executeScript("arguments[0].click();", driver.findElement(By.xpath("//a[text()='Customer Service']")));
+        Thread.sleep(3000);
+
+        String pageTitle = (String) jsExecutor.executeScript("return document.title;");
+        Assert.assertEquals(pageTitle, "Customer Service");
+
+        jsExecutor.executeScript("arguments[0].scrollIntoView(true);", driver.findElement(By.xpath("//input[@title='Sign up for our newsletter']")));
+        jsExecutor.executeScript("arguments[0].setAttribute('value', arguments[1]);", driver.findElement(By.xpath("//input[@title='Sign up for our newsletter']")), email);
+
+        jsExecutor.executeScript("arguments[0].click();", driver.findElement(By.xpath("//span[text()='Subscribe']")));
+        Thread.sleep(3000);
+
+        String text1 = (String) jsExecutor.executeScript("return document.documentElement.innerText;");
+//        Assert.assertTrue(text1.contains("Thank you for your subscription."));
+        Thread.sleep(3000);
+        jsExecutor.executeScript("window.location = 'https://www.youtube.com/'");
+
+        Thread.sleep(3000);
+
+    }
+    @Test
+    public void TC_02_Rode_html5() throws InterruptedException {
+        driver.get("https://warranty.rode.com/login");
+        WebElement loginBtn = driver.findElement(By.xpath("//button[@type='submit']"));
+        //empty
+        loginBtn.click();
+        String emptyEmailMessage = getElementValidationMessage("//input[@id='email']");
+        Assert.assertEquals(emptyEmailMessage, "Please fill out this field.");
+
+        //email invalid
+        String invalidEmailData = "aaa";
+        driver.findElement(By.xpath("//input[@id='email']")).sendKeys(invalidEmailData);
+        loginBtn.click();
+        String invalidEmail = getElementValidationMessage("//input[@id='email']");
+        //Please include an '@' in the email address. 'aa' is missing an '@'.
+        //Please enter an email address.
+        if(driver.toString().contains("ChromeDriver")) {
+            Assert.assertEquals(invalidEmail, "Please include an '@' in the email address. '" +invalidEmailData + "' is missing an '@'.");
+        } else {
+            Assert.assertEquals(invalidEmail, "Please enter an email address.");
+        }
+
+        Thread.sleep(3000);
+
+        invalidEmailData = "aaa@";
+        driver.findElement(By.xpath("//input[@id='email']")).clear();
+        driver.findElement(By.xpath("//input[@id='email']")).sendKeys(invalidEmailData);
+        loginBtn.click();
+        invalidEmail = getElementValidationMessage("//input[@id='email']");
+        //Please include an '@' in the email address. 'aa' is missing an '@'.
+        //Please enter an email address.
+        if(driver.toString().contains("ChromeDriver")) {
+            Assert.assertEquals(invalidEmail, "Please enter a part following '@'. '" +invalidEmailData+ "' is incomplete.");
+        } else {
+            Assert.assertEquals(invalidEmail, "Please enter an email address.");
+        }
+        Thread.sleep(3000);
+
+        invalidEmailData = "aaa@abc.";
+        driver.findElement(By.xpath("//input[@id='email']")).clear();
+        driver.findElement(By.xpath("//input[@id='email']")).sendKeys(invalidEmailData);
+        loginBtn.click();
+        invalidEmail = getElementValidationMessage("//input[@id='email']");
+        //Please include an '@' in the email address. 'aa' is missing an '@'.
+        //Please enter an email address.
+        if(driver.toString().contains("ChromeDriver")) {
+            Assert.assertEquals(invalidEmail, "'.' is used at a wrong position in '" +invalidEmailData.split("@")[1] + "'.");
+        } else {
+            Assert.assertEquals(invalidEmail, "Please enter an email address.");
+        }
+        Thread.sleep(3000);
+        
+        //email valid
+        driver.findElement(By.xpath("//input[@id='email']")).clear();
+        driver.findElement(By.xpath("//input[@id='email']")).sendKeys(email);
+        loginBtn.click();
+        Thread.sleep(3000);
+
+    }
+
+    @Test
+    public void TC_03_html5_validate() throws InterruptedException {
+        driver.get("https://automationfc.github.io/html5/index.html");
+        WebElement buttonSubmit = driver.findElement(By.xpath("//input[@type='submit']"));
+        //de trong name
+        buttonSubmit.click();
+        String inputValid = getElementValidationMessage("//input[@id='fname']");
+        Assert.assertEquals(inputValid, "Please fill out this field.");
+        Thread.sleep(3000);
+
+        //nhap name
+        String name = "thu";
+        driver.findElement(By.xpath("//input[@id='fname']")).sendKeys(name);
+        Assert.assertEquals(Color.fromString(driver.findElement(By.xpath("//input[@id='fname']")).getCssValue("background-color")).asHex().toLowerCase(), "#3c5cb4");
+            //nhan submit
+        buttonSubmit.click();
+        inputValid = getElementValidationMessage("//input[@id='pass']");
+        Assert.assertEquals(inputValid, "Please fill out this field.");
+        Thread.sleep(3000);
+
+        //nhap pass
+        String pass = "12345678";
+        driver.findElement(By.xpath("//input[@id='pass']")).sendKeys(pass);
+        Assert.assertEquals(Color.fromString(driver.findElement(By.xpath("//input[@id='pass']")).getCssValue("background-color")).asHex().toLowerCase(), "#3c5cb4");
+            //nhan submit
+        buttonSubmit.click();
+        inputValid = getElementValidationMessage("//input[@type='email']");
+        Assert.assertEquals(inputValid, "Please fill out this field.");
+        Thread.sleep(3000);
+
+        //nhap email invalid
+        String email = "aaa";
+        driver.findElement(By.xpath("//input[@type='email']")).sendKeys(email);
+        buttonSubmit.click();
+        inputValid = getElementValidationMessage("//input[@type='email']");
+        if(driver.toString().contains("ChromeDriver")) {
+            Assert.assertEquals(inputValid, "Please include an '@' in the email address. '" +email+ "' is missing an '@'.");
+        }
+        else {
+            Assert.assertEquals(inputValid, "Please enter an email address.");
+        }
+        Thread.sleep(3000);
+
+        email = "aaa@";
+        driver.findElement(By.xpath("//input[@type='email']")).clear();
+        driver.findElement(By.xpath("//input[@type='email']")).sendKeys(email);
+        buttonSubmit.click();
+        inputValid = getElementValidationMessage("//input[@type='email']");
+        if(driver.toString().contains("ChromeDriver")) {
+            Assert.assertEquals(inputValid, "Please enter a part following '@'. '" +email+ "' is incomplete.");
+        }
+        else {
+            Assert.assertEquals(inputValid, "Please enter an email address.");
+        }
+        Thread.sleep(3000);
+
+        //nhap email valid
+        email = "thu@gmail.com";
+        driver.findElement(By.xpath("//input[@type='email']")).clear();
+        driver.findElement(By.xpath("//input[@type='email']")).sendKeys(email);
+        buttonSubmit.click();
+        inputValid = getElementValidationMessage("//select");
+        Assert.assertEquals(inputValid, "Please select an item in the list.");
+        Thread.sleep(3000);
+
+        //chon Address
+        new Select(driver.findElement(By.cssSelector("select"))).selectByVisibleText("DA NANG");
+        Assert.assertEquals(new Select(driver.findElement(By.xpath("//select"))).getFirstSelectedOption().getText(), "DA NANG");
+        Assert.assertEquals(new Select(driver.findElement(By.xpath("//select"))).getOptions().size(), 6);
+        Assert.assertFalse(new Select(driver.findElement(By.xpath("//select"))).isMultiple());
+        buttonSubmit.click();
+        Thread.sleep(3000);
+    }
+
+    @Test
+    public void TC_04_Ubuntu() throws InterruptedException {
+        driver.get("https://login.ubuntu.com/");
+        WebElement buttonLogin = driver.findElement(By.xpath("//div[@class='login-form']//button[@type='submit']"));
+        //empty
+        buttonLogin.click();
+        String invalid = getElementValidationMessage("//div[@class='login-form']//input[@id='id_email']");
+        Assert.assertEquals(invalid, "Please fill out this field.");
+        Thread.sleep(3000);
+
+        //nhap aaa
+        String email = "aaa";
+        driver.findElement(By.xpath("//div[@class='login-form']//input[@id='id_email']")).sendKeys(email);
+        buttonLogin.click();
+        invalid = getElementValidationMessage("//div[@class='login-form']//input[@id='id_email']");
+        Assert.assertEquals(invalid, "Please include an '@' in the email address. '" +email+ "' is missing an '@'.");
+        Thread.sleep(3000);
+
+        //nhap aaa@
+        email = "aaa@";
+        driver.findElement(By.xpath("//div[@class='login-form']//input[@id='id_email']")).clear();
+        driver.findElement(By.xpath("//div[@class='login-form']//input[@id='id_email']")).sendKeys(email);
+        buttonLogin.click();
+        invalid = getElementValidationMessage("//div[@class='login-form']//input[@id='id_email']");
+        Assert.assertEquals(invalid, "Please enter a part following '@'. '" +email+ "' is incomplete.");
+        Thread.sleep(3000);
+
+        //nhap aaa@
+        email = "aaa@abc";
+        driver.findElement(By.xpath("//div[@class='login-form']//input[@id='id_email']")).clear();
+        driver.findElement(By.xpath("//div[@class='login-form']//input[@id='id_email']")).sendKeys(email);
+        buttonLogin.click();
+        invalid = getElementValidationMessage("//div[@class='login-form']//input[@id='id_password']");
+        Assert.assertEquals(invalid, "Please fill out this field.");
+        Thread.sleep(3000);
+
+        //nhap pass
+        String pass = "12345678";
+        driver.findElement(By.xpath("//div[@class='login-form']//input[@id='id_password']")).sendKeys(pass);
+        buttonLogin.click();
+        Assert.assertEquals(driver.findElement(By.cssSelector("span.p-form-help-text")).getText(), "Invalid email");
+        Thread.sleep(3000);
+        //nhap valid
+        email = "thu@gmail.com";
+        pass = "123456";
+        driver.findElement(By.xpath("//div[@class='login-form']//input[@id='id_email']")).clear();
+        driver.findElement(By.xpath("//div[@class='login-form']//input[@id='id_email']")).sendKeys(email);
+        driver.findElement(By.xpath("//div[@class='login-form']//input[@id='id_password']")).sendKeys(pass);
+        Thread.sleep(3000);
+        buttonLogin = driver.findElement(By.xpath("//div[@class='login-form']//button[@type='submit']"));
+        buttonLogin.click();
+        Assert.assertEquals(driver.findElement(By.cssSelector("p.p-notification__response")).getText(), "There were some problems with the information you gave us. Please check below and try again.");
+        Thread.sleep(3000);
+    }
+
+    @Test
+    public void TC_05_MayMocThietBI() {
+        driver.get("https://sieuthimaymocthietbi.com/account/register");
+        WebElement buttonSignUp = driver.findElement(By.xpath("//button[@value='Đăng ký']"));
+        //empty ho
+        buttonSignUp.click();
+        String invalid = getElementValidationMessage("");
+    }
+    //3. clean: delete data test / account / close browser
+    @AfterClass
+    public void cleanBrowser() {
+        driver.quit(); //dong trinh duyet
+    }
+
+}
