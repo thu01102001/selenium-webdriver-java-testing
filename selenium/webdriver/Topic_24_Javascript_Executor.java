@@ -287,6 +287,7 @@ public class Topic_24_Javascript_Executor {
     @Test
     public void TC_04_Ubuntu() throws InterruptedException {
         driver.get("https://login.ubuntu.com/");
+        Thread.sleep(3000);
         WebElement buttonLogin = driver.findElement(By.xpath("//div[@class='login-form']//button[@type='submit']"));
         //empty
         buttonLogin.click();
@@ -340,12 +341,136 @@ public class Topic_24_Javascript_Executor {
     }
 
     @Test
-    public void TC_05_MayMocThietBI() {
+    public void TC_05_MayMocThietBI() throws InterruptedException {
         driver.get("https://sieuthimaymocthietbi.com/account/register");
+        Thread.sleep(3000);
         WebElement buttonSignUp = driver.findElement(By.xpath("//button[@value='Đăng ký']"));
         //empty ho
         buttonSignUp.click();
-        String invalid = getElementValidationMessage("");
+        String invalid = getElementValidationMessage("//input[@id='lastName']");
+        Assert.assertEquals(invalid, "Please fill out this field.");
+        Thread.sleep(3000);
+//        Assert.assertEquals(driver.findElement(By.xpath("//span[@class='help-block form-error']")).getText(), "Không được để trống");
+//        Thread.sleep(3000);
+        //nhap ho
+        String ho = "nguyen";
+        driver.findElement(By.xpath("//input[@id='lastName']")).sendKeys(ho);
+        buttonSignUp.click();
+        invalid = getElementValidationMessage("//input[@id='firstName']");
+        Assert.assertEquals(invalid, "Please fill out this field.");
+        Thread.sleep(3000);
+
+        //nhap ten
+        String ten = "thu";
+        driver.findElement(By.xpath("//input[@id='firstName']")).sendKeys(ten);
+        buttonSignUp.click();
+        invalid = getElementValidationMessage("//input[@id='email']");
+        Assert.assertEquals(invalid, "Please fill out this field.");
+        Thread.sleep(3000);
+
+        //nhap email = aaa
+        String email = "aaa";
+        driver.findElement(By.xpath("//input[@id='email']")).sendKeys(email);
+        buttonSignUp.click();
+        invalid = getElementValidationMessage("//input[@id='email']");
+        Assert.assertEquals(invalid, "Please include an '@' in the email address. '" +email+ "' is missing an '@'.");
+        Thread.sleep(3000);
+
+        //nhap email = aaa@
+        email = "aaa@";
+        driver.findElement(By.xpath("//input[@id='email']")).clear();
+        driver.findElement(By.xpath("//input[@id='email']")).sendKeys(email);
+        buttonSignUp.click();
+        invalid = getElementValidationMessage("//input[@id='email']");
+        Assert.assertEquals(invalid, "Please enter a part following '@'. '" +email+ "' is incomplete.");
+        Thread.sleep(3000);
+
+        //nhap email = aaa@aaa
+        email = "aaa@aaa";
+        buttonSignUp.click();
+        driver.findElement(By.xpath("//input[@id='email']")).clear();
+        driver.findElement(By.xpath("//input[@id='email']")).sendKeys(email);
+        invalid = getElementValidationMessage("//input[@id='password']");
+        Assert.assertEquals(invalid, "Please fill out this field.");
+        Thread.sleep(3000);
+        Assert.assertEquals(driver.findElement(By.xpath("//input[@id='email']/following-sibling::span")).getText(), "Email sai định dạng");
+        Thread.sleep(3000);
+//        buttonSignUp.click();
+//        Assert.assertEquals(driver.findElement(By.xpath("//input[@id='password']/following-sibling::span")).getText(), "Không được để trống");
+//        Thread.sleep(3000);
+
+        //nhap pass
+        String pass = "123";
+        driver.findElement(By.xpath("//input[@id='password']")).sendKeys(pass);
+        buttonSignUp.click();
+//        Assert.assertEquals(Color.fromString(driver.findElement(By.xpath("//input[@id='email']")).getAttribute("color")).asHex().toLowerCase(), "#ff0000");
+        Thread.sleep(3000);
+
+        //nhap email hop le
+        email = "thu@gmail.com";
+        driver.findElement(By.xpath("//input[@id='email']")).clear();
+        driver.findElement(By.xpath("//input[@id='email']")).sendKeys(email);
+        buttonSignUp.click();
+        Thread.sleep(3000);
+        Assert.assertEquals(driver.findElement(By.cssSelector("div.errors li")).getText(), "Mật khẩu dài từ 6 đến 50 ký tự");
+
+        //nhap pass 6 - 50 ky tuu
+        pass = "12345678";
+        driver.findElement(By.xpath("//input[@id='lastName']")).sendKeys(ho);
+        driver.findElement(By.xpath("//input[@id='firstName']")).sendKeys(ten);
+        driver.findElement(By.xpath("//input[@id='email']")).clear();
+        driver.findElement(By.xpath("//input[@id='password']")).sendKeys(pass);
+        buttonSignUp = driver.findElement(By.xpath("//button[@value='Đăng ký']"));
+        buttonSignUp.click();
+        Thread.sleep(3000);
+        Assert.assertEquals(driver.findElement(By.cssSelector("div.errors li")).getText(), "mã captcha được xác định là máy");
+        Thread.sleep(3000);
+    }
+
+    @Test
+    public void TC_06_RemoveAttribute() throws InterruptedException {
+        driver.get("http://demo.guru99.com/v4");
+        driver.findElement(By.xpath("//input[@name='uid']")).sendKeys("mngr581835");
+        driver.findElement(By.xpath("//input[@name='password']")).sendKeys("tanAhUq");
+        driver.findElement(By.xpath("//input[@name='btnLogin']")).click();
+        driver.findElement(By.xpath("//a[text()='New Customer']")).click();
+        driver.findElement(By.xpath("//input[@name='name']")).sendKeys("thu");
+        driver.findElement(By.xpath("//input[@value='f']")).click();
+        jsExecutor.executeScript("arguments[0].removeAttribute('type');", driver.findElement(By.xpath("//input[@id='dob']")));
+        driver.findElement(By.xpath("//input[@id='dob']")).sendKeys("2024-07-18");
+        driver.findElement(By.xpath("//textarea[@name='addr']")).sendKeys("hanoi");
+        driver.findElement(By.xpath("//input[@name='city']")).sendKeys("namdinh");
+        driver.findElement(By.xpath("//input[@name='state']")).sendKeys("lethu");
+        driver.findElement(By.xpath("//input[@name='pinno']")).sendKeys("011001");
+        driver.findElement(By.xpath("//input[@name='telephoneno']")).sendKeys("0364697188");
+        driver.findElement(By.xpath("//input[@name='emailid']")).sendKeys("thunguyen@gmail.com");
+        driver.findElement(By.xpath("//input[@name='password']")).sendKeys("123456789");
+        driver.findElement(By.xpath("//input[@type='submit']")).click();
+        Thread.sleep(3000);
+        Assert.assertEquals(driver.findElement(By.cssSelector("p.heading3")).getText(), "Customer Registered Successfully!!!");
+    }
+
+    @Test
+    public void TC_06_Guru() throws InterruptedException {
+        jsExecutor.executeScript("window.location = 'http://live.techpanda.org/'");
+        jsExecutor.executeScript("arguments[0].click();", driver.findElement(By.xpath("//div[@class='account-cart-wrapper']//span[text()='Account']")));
+        jsExecutor.executeScript("arguments[0].click();", driver.findElement(By.cssSelector("div#header-account a[title='My Account']")));
+        Thread.sleep(3000);
+        jsExecutor.executeScript("arguments[0].click();", driver.findElement(By.xpath("//a[@title='Create an Account']")));
+        jsExecutor.executeScript("arguments[0].value='thu';", driver.findElement(By.xpath("//input[@id='firstname']")));
+        jsExecutor.executeScript("arguments[0].value='le';", driver.findElement(By.xpath("//input[@id='middlename']")));
+        jsExecutor.executeScript("arguments[0].value='nguyen';", driver.findElement(By.xpath("//input[@id='lastname']")));
+        jsExecutor.executeScript("arguments[0].value='" +email+ "';", driver.findElement(By.xpath("//input[@id='email_address']")));
+        jsExecutor.executeScript("arguments[0].value='123456789';", driver.findElement(By.xpath("//input[@id='password']")));
+        jsExecutor.executeScript("arguments[0].value='123456789';", driver.findElement(By.xpath("//input[@id='confirmation']")));
+        jsExecutor.executeScript("arguments[0].click();", driver.findElement(By.xpath("//button[@title='Register']")));
+        Thread.sleep(3000);
+        String msg = (String) jsExecutor.executeScript("return document.documentElement.innerText;", driver.findElement(By.xpath("//li[@class='success-msg']//span")));
+        Assert.assertTrue(msg.contains("Thank you for registering with Main Website Store."));
+        jsExecutor.executeScript("arguments[0].click();", driver.findElement(By.xpath("//div[@class='account-cart-wrapper']//span[text()='Account']")));
+        jsExecutor.executeScript("arguments[0].click();", driver.findElement(By.cssSelector("div#header-account a[title='Log Out']")));
+        Thread.sleep(3000);
+
     }
     //3. clean: delete data test / account / close browser
     @AfterClass

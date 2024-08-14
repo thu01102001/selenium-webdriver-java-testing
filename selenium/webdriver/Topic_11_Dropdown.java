@@ -82,6 +82,7 @@ public class Topic_11_Dropdown {
         new Select(driver.findElement(By.cssSelector("select#country"))).selectByVisibleText("Vietnam");
         driver.findElement(By.cssSelector("input#map_search_query")).sendKeys("Ho Chi Minh");
         driver.findElement(By.cssSelector("button.btn-default")).click();
+
         List<WebElement> dealers = driver.findElements(By.xpath("//h3[text()='Dealers']/following-sibling::div//h4"));
         Assert.assertEquals(dealers.size(), 16);
         for(WebElement element : dealers) {

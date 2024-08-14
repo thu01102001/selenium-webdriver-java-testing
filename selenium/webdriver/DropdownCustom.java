@@ -76,6 +76,9 @@ public class DropdownCustom {
             }
         }
         Thread.sleep(3000);
+        driver.findElement(By.xpath("div#_desktop_logo a")).click();
+        Thread.sleep(2000);
+        Assert.assertTrue(driver.findElement(By.xpath("//h2[contains(text(), 'Populaarsed tooted')]")).isDisplayed());
     }
     //3. clean: delete data test / account / close browser
     @AfterClass
